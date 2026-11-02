@@ -1,20 +1,78 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group = 'kr.ac.jnu'
 version = '1.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+application {
+    mainClass = 'kr.ac.jnu.Main'
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation 'org.xerial:sqlite-jdbc:3.54.1.0'
+
     testImplementation platform('org.junit:junit-bom:6.0.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-test {
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    options.docEncoding = 'UTF-8'
+    failOnError = true
+}
+
+tasks.named('test') {
     useJUnitPlatform()
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes 'Main-Class': application.mainClass.get()
+    }
+}
+
+tasks.register('fatJar', Jar) {
+    group = 'build'
+    description = 'Builds a runnable JAR containing all runtime dependencies.'
+    archiveClassifier = 'all'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes 'Main-Class': application.mainClass.get()
+    }
+
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.collect { dependency ->
+            dependency.isDirectory() ? dependency : zipTree(dependency)
+        }
+    }
+
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+}
+
+tasks.register('verifyDayMate') {
+    group = 'verification'
+    description = 'Runs tests, generates Javadoc, and builds the self-contained runnable JAR.'
+    dependsOn tasks.named('test'), tasks.named('javadoc'), tasks.named('fatJar')
 }

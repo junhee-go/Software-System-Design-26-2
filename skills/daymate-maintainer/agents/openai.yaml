@@ -1,0 +1,4 @@
+interface:
+  display_name: "DayMate Maintainer"
+  short_description: "Implement DayMate Swing and SQLite features safely"
+  default_prompt: "Use $daymate-maintainer to implement this DayMate feature within the existing architecture."

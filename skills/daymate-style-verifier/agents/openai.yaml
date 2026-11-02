@@ -1,0 +1,4 @@
+interface:
+  display_name: "DayMate Style Verifier"
+  short_description: "Review DayMate changes without modifying files"
+  default_prompt: "Use $daymate-style-verifier to review this DayMate production-code change without editing files."

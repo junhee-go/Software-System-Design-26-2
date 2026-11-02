@@ -1,0 +1,4 @@
+interface:
+  display_name: "DayMate Design Sync"
+  short_description: "Keep implementation, UML, and requirements aligned"
+  default_prompt: "Use $daymate-design-sync to reconcile this DayMate change with the project design artifacts."

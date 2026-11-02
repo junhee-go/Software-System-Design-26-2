@@ -1,0 +1,4 @@
+interface:
+  display_name: "Javadoc API Manual"
+  short_description: "Maintain the assignment Javadoc API manual"
+  default_prompt: "Use $javadoc-api-manual to document and verify the changed DayMate public APIs."

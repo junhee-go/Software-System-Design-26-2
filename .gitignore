@@ -39,3 +39,6 @@ nbdist/
 ### OS files ###
 .DS_Store
 Thumbs.db
+
+### Design Artifacts ###
+docs/diagrams/

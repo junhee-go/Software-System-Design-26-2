@@ -1,0 +1,4 @@
+interface:
+  display_name: "README Maintainer"
+  short_description: "Document DayMate setup and implementation status"
+  default_prompt: "Use $readme-maintainer to update the DayMate README for the current implementation."

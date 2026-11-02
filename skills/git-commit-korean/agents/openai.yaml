@@ -1,0 +1,6 @@
+interface:
+  display_name: "Korean Git Commit"
+  short_description: "Prepare focused Korean commits for DayMate"
+  default_prompt: "Use $git-commit-korean to inspect these DayMate changes and prepare an accurate Korean commit."
+policy:
+  allow_implicit_invocation: true
