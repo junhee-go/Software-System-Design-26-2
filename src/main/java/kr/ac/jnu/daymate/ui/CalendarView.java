@@ -37,6 +37,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 /**
  * 등록된 일정을 월간 격자 또는 주간 목록으로 표시하는 Swing 캘린더 화면이다.
@@ -49,6 +50,7 @@ public final class CalendarView extends JPanel {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private final CalendarController controller;
+    private final Consumer<ScheduleData> scheduleEditHandler;
     private final JLabel periodLabel = new JLabel("", SwingConstants.CENTER);
     private final JButton previousButton = new JButton("이전");
     private final JButton todayButton = new JButton("오늘");
@@ -56,6 +58,7 @@ public final class CalendarView extends JPanel {
     private final JButton monthButton = new JButton("월간");
     private final JButton weekButton = new JButton("주간");
     private final JButton detailButton = new JButton("상세 보기");
+    private final JButton editButton = new JButton("수정·삭제");
     private final DefaultTableModel monthTableModel = createTableModel(
             "월", "화", "수", "목", "금", "토", "일"
     );
@@ -84,7 +87,22 @@ public final class CalendarView extends JPanel {
      * @throws NullPointerException {@code controller}가 {@code null}인 경우
      */
     public CalendarView(CalendarController controller) {
+        this(controller, null);
+    }
+
+    /**
+     * 선택한 일정을 수정 화면으로 전달할 수 있는 캘린더 화면을 생성한다.
+     *
+     * @param controller 캘린더 일정을 조회할 컨트롤러
+     * @param scheduleEditHandler 수정할 일정을 전달받을 함수. 수정 기능이 없으면 {@code null}
+     * @throws NullPointerException {@code controller}가 {@code null}인 경우
+     */
+    public CalendarView(
+            CalendarController controller,
+            Consumer<ScheduleData> scheduleEditHandler
+    ) {
         this.controller = Objects.requireNonNull(controller, "캘린더 컨트롤러는 null일 수 없습니다.");
+        this.scheduleEditHandler = scheduleEditHandler;
         buildUserInterface();
         bindActions();
         refreshCalendar();
@@ -112,7 +130,9 @@ public final class CalendarView extends JPanel {
             @Override
             protected void done() {
                 try {
-                    if (requestedViewType == viewType) {
+                    if (requestedViewType == viewType
+                            && startDate.equals(getPeriodStart())
+                            && endDate.equals(getPeriodEnd())) {
                         displayCalendar(get(), requestedViewType);
                     }
                 } catch (InterruptedException exception) {
@@ -234,6 +254,8 @@ public final class CalendarView extends JPanel {
         detailPanel.setBorder(BorderFactory.createTitledBorder("선택 기간의 일정"));
         detailPanel.add(new JScrollPane(detailTable), BorderLayout.CENTER);
         JPanel detailButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        editButton.setVisible(scheduleEditHandler != null);
+        detailButtonPanel.add(editButton);
         detailButtonPanel.add(detailButton);
         detailPanel.add(detailButtonPanel, BorderLayout.SOUTH);
 
@@ -264,6 +286,7 @@ public final class CalendarView extends JPanel {
         monthButton.addActionListener(event -> changeView(ViewType.MONTH));
         weekButton.addActionListener(event -> changeView(ViewType.WEEK));
         detailButton.addActionListener(event -> showSelectedDetail());
+        editButton.addActionListener(event -> editSelectedSchedule());
         detailTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent event) {
@@ -379,12 +402,31 @@ public final class CalendarView extends JPanel {
     }
 
     private void showSelectedDetail() {
-        int row = detailTable.getSelectedRow();
-        if (row < 0 || row >= detailSchedules.size()) {
+        ScheduleData selected = getSelectedDetailSchedule();
+        if (selected == null) {
             showError("상세 정보를 확인할 일정을 선택해 주세요.");
             return;
         }
-        displayScheduleDetail(detailSchedules.get(row));
+        displayScheduleDetail(selected);
+    }
+
+    private void editSelectedSchedule() {
+        ScheduleData selected = getSelectedDetailSchedule();
+        if (selected == null) {
+            showError("수정하거나 삭제할 일정을 선택해 주세요.");
+            return;
+        }
+        if (scheduleEditHandler != null) {
+            scheduleEditHandler.accept(selected);
+        }
+    }
+
+    private ScheduleData getSelectedDetailSchedule() {
+        int row = detailTable.getSelectedRow();
+        if (row < 0 || row >= detailSchedules.size()) {
+            return null;
+        }
+        return detailSchedules.get(row);
     }
 
     private void updatePeriodLabel() {
@@ -427,6 +469,7 @@ public final class CalendarView extends JPanel {
             showActiveCard();
         }
         detailButton.setEnabled(!busy);
+        editButton.setEnabled(!busy);
     }
 
     private void showError(String message) {

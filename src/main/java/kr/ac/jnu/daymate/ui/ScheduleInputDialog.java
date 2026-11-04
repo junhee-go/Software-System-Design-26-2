@@ -45,6 +45,7 @@ public final class ScheduleInputDialog extends JDialog {
 
     private final ScheduleController scheduleController;
     private final ScheduleData editingSchedule;
+    private final Runnable changedCallback;
     private final JTextField titleField = new JTextField(20);
     private final JComboBox<String> typeComboBox = new JComboBox<>(
             new String[]{"수업", "시험", "회의", "개인 약속"}
@@ -68,7 +69,7 @@ public final class ScheduleInputDialog extends JDialog {
      * @param scheduleController 일정 처리를 담당할 컨트롤러
      */
     public ScheduleInputDialog(Window owner, ScheduleController scheduleController) {
-        this(owner, scheduleController, null);
+        this(owner, scheduleController, null, () -> { });
     }
 
     /**
@@ -83,12 +84,30 @@ public final class ScheduleInputDialog extends JDialog {
             ScheduleController scheduleController,
             ScheduleData editingSchedule
     ) {
+        this(owner, scheduleController, editingSchedule, () -> { });
+    }
+
+    /**
+     * 기존 일정을 수정하고 변경 성공 후 지정한 작업을 실행하는 입력 대화상자를 생성한다.
+     *
+     * @param owner 대화상자를 소유하는 창. 소유자가 없으면 {@code null}
+     * @param scheduleController 일정 처리를 담당할 컨트롤러
+     * @param editingSchedule 수정할 일정. {@code null}이면 새 일정을 등록한다.
+     * @param changedCallback 일정 저장 또는 삭제 성공 후 실행할 작업
+     */
+    public ScheduleInputDialog(
+            Window owner,
+            ScheduleController scheduleController,
+            ScheduleData editingSchedule,
+            Runnable changedCallback
+    ) {
         super(owner, editingSchedule == null ? "일정 등록" : "일정 수정", ModalityType.APPLICATION_MODAL);
         this.scheduleController = Objects.requireNonNull(
                 scheduleController,
                 "일정 컨트롤러는 null일 수 없습니다."
         );
         this.editingSchedule = editingSchedule;
+        this.changedCallback = Objects.requireNonNull(changedCallback, "일정 변경 작업은 null일 수 없습니다.");
 
         initializeRepeatDayCheckBoxes();
         buildUserInterface();
@@ -300,6 +319,7 @@ public final class ScheduleInputDialog extends JDialog {
                                 "일정 관리",
                                 JOptionPane.INFORMATION_MESSAGE
                         );
+                        changedCallback.run();
                         closeDialog();
                         return;
                     }
@@ -345,6 +365,7 @@ public final class ScheduleInputDialog extends JDialog {
                                 "일정 관리",
                                 JOptionPane.INFORMATION_MESSAGE
                         );
+                        changedCallback.run();
                         closeDialog();
                         return;
                     }
