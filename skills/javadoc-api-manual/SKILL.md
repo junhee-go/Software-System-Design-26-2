@@ -9,12 +9,13 @@ Use this skill when a public/protected Java API changes or when preparing the Ja
 
 ## Documentation standard
 
+- Write DayMate public and protected API descriptions, package descriptions, and explanatory comments in Korean. Keep Java identifiers and Javadoc tags in their standard English form.
 - Document each public class, interface, enum, constructor, and method that belongs in the API manual.
 - Start with a concise purpose sentence, then explain non-obvious behavior or constraints.
 - Use `@param`, `@return`, and `@throws` whenever applicable. Do not add empty tags or impossible exceptions.
 - Describe observable contracts rather than guesses. Keep documentation aligned with validation, persistence, cache, and threading behavior.
 - Add `package-info.java` when a package overview materially helps the manual.
-- Korean descriptions are acceptable; keep identifiers and Java terms consistent with code.
+- Keep identifiers and Java terms consistent with code.
 
 ## Verification
 
