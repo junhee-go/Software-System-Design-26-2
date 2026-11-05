@@ -35,9 +35,9 @@ public final class CourseAssignmentView extends JPanel {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private final CourseAssignmentController controller;
-    private final DefaultTableModel courseTableModel = createTableModel("ID", "과목명", "담당 교수");
+    private final DefaultTableModel courseTableModel = createTableModel("과목명", "담당 교수");
     private final DefaultTableModel assignmentTableModel = createTableModel(
-            "ID", "과제명", "관련 과목", "마감 일시", "제출 상태"
+            "과제명", "관련 과목", "마감 일시", "제출 상태"
     );
     private final JTable courseTable = new JTable(courseTableModel);
     private final JTable assignmentTable = new JTable(assignmentTableModel);
@@ -107,7 +107,7 @@ public final class CourseAssignmentView extends JPanel {
         courses = List.copyOf(courseList);
         courseTableModel.setRowCount(0);
         for (CourseData course : courses) {
-            courseTableModel.addRow(new Object[]{course.getId(), course.getName(), course.getProfessor()});
+            courseTableModel.addRow(new Object[]{course.getName(), course.getProfessor()});
         }
     }
 
@@ -125,7 +125,6 @@ public final class CourseAssignmentView extends JPanel {
         assignmentTableModel.setRowCount(0);
         for (AssignmentData assignment : assignments) {
             assignmentTableModel.addRow(new Object[]{
-                    assignment.getId(),
                     assignment.getTitle(),
                     findCourseName(assignment.getCourseId()),
                     assignment.getDueDateTime().format(DUE_DATE_TIME_FORMAT),
@@ -319,8 +318,8 @@ public final class CourseAssignmentView extends JPanel {
         if (row < 0) {
             return null;
         }
-        int courseId = (int) courseTableModel.getValueAt(row, 0);
-        return courses.stream().filter(course -> course.getId() == courseId).findFirst().orElse(null);
+        int modelRow = courseTable.convertRowIndexToModel(row);
+        return modelRow >= 0 && modelRow < courses.size() ? courses.get(modelRow) : null;
     }
 
     private AssignmentData getSelectedAssignment() {
@@ -328,11 +327,8 @@ public final class CourseAssignmentView extends JPanel {
         if (row < 0) {
             return null;
         }
-        int assignmentId = (int) assignmentTableModel.getValueAt(row, 0);
-        return assignments.stream()
-                .filter(assignment -> assignment.getId() == assignmentId)
-                .findFirst()
-                .orElse(null);
+        int modelRow = assignmentTable.convertRowIndexToModel(row);
+        return modelRow >= 0 && modelRow < assignments.size() ? assignments.get(modelRow) : null;
     }
 
     private String findCourseName(int courseId) {
