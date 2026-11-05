@@ -24,21 +24,66 @@ DayMate는 대학생을 위한 Java Swing 기반 개인 일정 관리 프로그�
 
 ## 실행 및 검증
 
-Windows PowerShell에서 다음 명령을 사용합니다.
+### 실행 환경
+
+- Java 17 이상
+- Git
+
+Gradle Wrapper와 내장 SQLite 데이터베이스를 사용하므로 별도의 Gradle 및 데이터베이스 서버를 설치할 필요가 없습니다.
+
+### 저장소 Clone
+
+터미널에서 저장소를 Clone하고 프로젝트 최상위 폴더로 이동합니다.
+
+```shell
+git clone https://github.com/junhee-go/Software-System-Design-26-2.git
+cd Software-System-Design-26-2
+```
+
+프로젝트 최상위 폴더는 `build.gradle`, `settings.gradle`, `gradlew`, `gradlew.bat` 파일이 있는 위치입니다.
+
+### 애플리케이션 실행
+
+프로젝트 최상위 폴더에서 다음 명령을 실행합니다.
+
+Windows:
 
 ```powershell
 .\gradlew.bat run
-.\gradlew.bat test
-.\gradlew.bat javadoc
-.\gradlew.bat verifyDayMate
 ```
 
-`verifyDayMate`는 테스트 실행, Javadoc 생성 및 런타임 의존성을 포함한 runnable JAR 빌드를 함께 수행합니다.
+macOS/Linux:
 
-`verifyDayMate` 실행 후 생성된 독립 실행 JAR은 다음 명령으로 실행할 수 있습니다.
+```bash
+./gradlew run
+```
 
-```powershell
-java -jar build\libs\ssd_personal_project-1.0-SNAPSHOT-all.jar
+### 테스트 및 문서 생성
+
+| 작업 | Windows | macOS/Linux |
+| --- | --- | --- |
+| 테스트 실행 | `.\gradlew.bat test` | `./gradlew test` |
+| Javadoc 생성 | `.\gradlew.bat javadoc` | `./gradlew javadoc` |
+| 전체 검증 및 JAR 생성 | `.\gradlew.bat verifyDayMate` | `./gradlew verifyDayMate` |
+
+#### 테스트
+
+테스트는 일정·과목·과제 관리, 반복 일정 조회, 오늘의 요약, 알림 처리, SQLite 저장 및 메모리 캐시 일관성을 검증합니다. 자세한 테스트 결과는 `build/reports/tests/test/index.html`에서 확인할 수 있습니다.
+
+![Gradle 테스트 실행 결과](docs/images/test-results.png)
+
+#### Javadoc API 매뉴얼
+
+Javadoc은 소스 코드의 Javadoc 주석을 바탕으로 패키지, 클래스, 생성자 및 메서드의 설명을 HTML 형식으로 생성하는 Java API 문서 도구입니다. Javadoc 생성 명령을 실행하면 API 매뉴얼 전체가 `build/docs/javadoc/`에 생성되며, `build/docs/javadoc/index.html`을 열어 확인할 수 있습니다.
+
+### 전체 검증 및 실행 가능 JAR 생성
+
+`verifyDayMate`는 테스트 실행, Javadoc 생성 및 런타임 의존성을 포함한 실행 가능 JAR 빌드를 함께 수행합니다.
+
+생성된 실행 가능 JAR은 `build/libs/ssd_personal_project-1.0-SNAPSHOT-all.jar`에 저장되며, 다음 명령으로 실행할 수 있습니다.
+
+```shell
+java -jar build/libs/ssd_personal_project-1.0-SNAPSHOT-all.jar
 ```
 
 ## 데이터 저장
