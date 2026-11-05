@@ -6,6 +6,7 @@ import kr.ac.jnu.daymate.model.AssignmentData;
 import kr.ac.jnu.daymate.model.ScheduleData;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -128,10 +129,15 @@ public final class TodaySummaryView extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JPanel headerPanel = new JPanel(new BorderLayout());
+        JPanel summaryPanel = new JPanel();
+        summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.Y_AXIS));
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        statusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        summaryPanel.add(titleLabel);
+        summaryPanel.add(statusLabel);
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         actionPanel.add(refreshButton);
-        headerPanel.add(titleLabel, BorderLayout.WEST);
-        headerPanel.add(statusLabel, BorderLayout.CENTER);
+        headerPanel.add(summaryPanel, BorderLayout.CENTER);
         headerPanel.add(actionPanel, BorderLayout.EAST);
 
         scheduleTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
